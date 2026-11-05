@@ -25,25 +25,24 @@ def apply_3plus1(items):
 
 
 def apply_loyalty_discount(items, card_level):
-    #Итоговая стоимость заказа с учётом акции 3+1 и скидки по карте.
     level = card_level if card_level in DISCOUNT_RATES else DEFAULT_LEVEL
     bonuses = []
 
-    # Акция 3+1
     free_sum, free_names = apply_3plus1(items)
     if free_names:
         bonuses.append(f"3+1: бесплатно {', '.join(free_names)}")
 
-    #Скидка по карте от суммы после акции
     base = sum(i["price"] for i in items) - free_sum
     discount = round(base * DISCOUNT_RATES[level], ROUND_DIGITS)
-    if level != DEFAULT_LEVEL:
+
+    if level != DEFAULT_LEVEL and discount > 0:
         bonuses.append(f"Скидка {level} {DISCOUNT_RATES[level]:.0%}")
 
-    #Итог не может быть отрицательным
+    # итог не может быть отрицательным
     total = max(round(base - discount, ROUND_DIGITS), 0.0)
 
     return {"total": total, "discount": discount, "bonuses": bonuses}
+
 
 
 if __name__ == "__main__":
